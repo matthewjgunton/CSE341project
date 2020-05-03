@@ -1,0 +1,72 @@
+Nickel Savings and Loan Database Application:
+
+Files:
+
+README => The File you're on right now
+mjg422.jar => executable file, run via 'java -jar mjg422.jar'
+META-INF & oracle => contains all the class information for JDBC
+PLSQL => contains all the PLSQL functions and triggers
+SQL => contains all the DDL and DML for most of the database (transactions largely not included)
+mjg422 => contains all the java code,
+
+inside mjg422: 
+project.java => Entry to the database project
+Transactions.java => Contains all the logic and controls for the transaction requests inside the customer interface 
+Customer.java => Contains the customer interface, as well as the logic for looking up customer information, with a link to transactions for customer transactions
+Database.java => Contains all the database execution logic
+Location.java => Contains the location interface and all its logic
+Debt.java => Contains the debt interface and all its logic
+makefile => convenient way to compile everything, moves the jar file out to the main level of the directory where it can access ojdbc.jar
+
+Most of the data was generated via Mockaroo, though some was also made by my family during their beta-testing phase.
+
+===========================================================
+Manual:
+
+<Home> Interface:
+After you login, you will be greeted with the <Home> interface. The interface here lets bank administrators see a wide variety of information about the bank. 
+From <Home>, you can see 3 different interfaces, each with a different part of the bank. 
+Type in 'C' and you get to the <Customer> interface. Designed with trust in mind for the user. 
+Type in 'L' and you get the <Location> interface. This was designed to help management get a better sense of day to day activities.
+Type in 'D' and you get the <Debt> interface. This allows upper management to see the health of the bank. 
+If you type in 'Q', the application logs you out and quits.
+
+<Customer> Interface:
+
+>>Suggested Test CustomerId: 93<<
+
+This interface is inherently trusting giving questions that may not normally be available to everyday customers.  While we have a series of tests to be sure certain database constraints are maintained, when Nickel Savings and Loan goes to online banking, there will be questions that get dropped (e.g. Enter interest rate for the account). 
+With that out of the way, one can see there are 2 major pieces to the customer interface. Once someone enters the customer id, the user can retrieve information about that customer (with options labeled 10 - 15), or they can add information to that user (with options 16-18 and 20-25). We do not allow users to delete customer information, as even if a customer closes an account with us, we still need to keep information about them on file for tax information as well as anti-money landering practices. With these in mind, we also require that any transfers be from money already in a customer account to another customer account within the bank. At this time, we do not offer any interbank transfers. 
+Regarding Withdrawals, deposits, transfers, and loans, the bank is looking into a new policy that would allow customers to identify themselves using debit cards rather than account information. This has been found to speed up the process, but given the concern with security, we have been carefully tracking transactions that utilize this feature. As such, we are asking users to track all transactions made when the customer identifies themselves with a card so the bank may act quickly if fraud is suspected in identifying these transactions. Thus, the system will allow the user to enter a card number to identify the user, if not then the standard of getting the account information will suffice. 
+With all checking accounts, if the customer goes under 1500 balance, the bank will impose a $50 penalty on the account. If the customer overdraws the checking account on a purchase (meaning they go below 0 balance), the bank will impose a $150 penalty onto the account. This penalty remains on the account and keeps increasing until a deposit is made to reduce it (no loans can be made to reduce the penalty). Penalties will keep amassing with every transactions until a balance above 1500 is achieved.
+One feature we're especially proud of is the transaction history feature. Here users can see what the customer has been up to recently, with many options to tailor searches.
+The purchase, withdrawal and deposit requirements are actualized within this interface
+
+<Location> Interface:
+
+>>Suggested Test LocationId: 30<<
+
+Designed primarily with bank management in mind, here management can see what types of transactions are happening at each of their locations. 
+From finding out that some banks see more withdrawals than deposits, to seeing that one bank is giving out lots of loans, this interface allows management to see location activity. 
+Furthermore, as Nickel Savings and Loan requires all new customers to show up to a location in person to sign up for as a custoemr, this interface is where new customers can be created.
+
+<Debt> Interface:
+This interface was designed primarily with stockholders and upper management in mind. 
+Here banks get a high level view of bank debts including total amounts loaned out, total amounts due this month as well as average debt by customer. 
+
+*We are especially proud of our way to make sure that data is displayed in appealing ways to the user. This can be found with our hashmap implementation in the Database.java file. We chose to slowdown JDBC a bit to make sure that the data was displayed in a matter users can easily see, even though our database is setup to allow far more space than might be suggested by column sizes in the display.
+
+Next Items for Development:
+Had the team not run into issues relating to disease and timing, other features we would have liked to develop include:
+*More analysis options on the debts interface
+*A more efficient way to connect to the database, as of now a new connection has to be made to the database each time a request is made. This natuarlly is far slower than keeping a connection live all the time the user is logged in.
+*A more role segregated field. As of now everything is very easy to interact with, 100% leading to audit issues and keeping the door open for fraud. Would like to implement a segregation of duties feature here so once the online banking system is setup much of the logic here can be reused.
+*A way for Customers to pay down penalties without having to make a deposit. This would work well with the transition to online. It was a PLSQL function that fell by the way side in favor of better testing
+*The card menu is planned to be expanded to include more information, such as accounts tied to debit cards and interest rates, balances, and corresponding credit_limits for credit cards
+
+Deliberate Database design choices:
+>Banks should not lose records of transactions, as such I did not implement cascading deletions for any transactions (should the system allow cascading transaction deletions, then money laundering may occur)
+>All purchases require a card to happen (if any transaction happens without a card, then it is in cash and banks are effectively blind to it)
+>Assets may belong to multiple people, likewise with loans, so it didn't make sense to implement a cascading deletion there
+>Cards we allowed to be owned jointly
+>Vendor IDs were not put into the database, as the bank part of any card transaction is simply to be sure the card has the funds necessary to do the transaction (or is not above the credit_limit with the purchase)

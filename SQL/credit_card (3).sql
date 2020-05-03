@@ -1,0 +1,10 @@
+insert into credit_card (cardnum, loannum) values (41, 41, 1000);
+insert into credit_card (cardnum, loannum) values (42, 42, 1000);
+insert into credit_card (cardnum, loannum) values (43, 43, 1000);
+insert into credit_card (cardnum, loannum) values (44, 44, 1000);
+insert into credit_card (cardnum, loannum) values (45, 45, 1000);
+insert into credit_card (cardnum, loannum) values (46, 46, 1000);
+insert into credit_card (cardnum, loannum) values (47, 47, 1000);
+insert into credit_card (cardnum, loannum) values (48, 48, 1000);
+insert into credit_card (cardnum, loannum) values (49, 49, 1000);
+insert into credit_card (cardnum, loannum) values (50, 50, 1000);
